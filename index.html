@@ -635,24 +635,30 @@
 	const modalGenre = document.getElementById('modalGenre');
 
 	document.querySelectorAll('.story-card').forEach(card => {
+		
+		// 1. KESİN ÇÖZÜM: Boş (#) linklerin sayfayı yukarı zıplatmasını kökten engelle.
+		if (card.getAttribute('href') === '#') {
+			card.setAttribute('href', 'javascript:void(0);');
+		}
+
 		card.addEventListener('click', function(e) {
 			const href = this.getAttribute('href');
 			
-			// Eğer link # ise (diğer 49 hikaye) modal açılsın
-			if (href === '#' || href === '') {
-				e.preventDefault();
+			// Eğer link "javascript:void(0);" olarak değiştirilmişse modal açılsın
+			if (href === 'javascript:void(0);' || href === '#' || href === '') {
+				e.preventDefault(); // Her ihtimale karşı tarayıcı hareketini durdur
 				
-				// İçerikleri kopyala
+				// Kartın İçeriklerini Kopyala
 				const title = this.querySelector('h3').innerText;
 				const num = this.querySelector('.story-number').innerText;
 				const genre = this.querySelector('p').innerText;
 
-				// Modala yerleştir
+				// Modala Yerleştir
 				modalTitle.innerText = title;
 				modalNumber.innerText = num;
 				modalGenre.innerText = genre;
 
-				// Modalı görünür yap
+				// Modalı Görünür Yap
 				modal.classList.add('modal-open');
 			}
 		});
@@ -663,7 +669,7 @@
 		modal.classList.remove('modal-open');
 	});
 
-	// Modal Dışına Tıklanınca Kapatma
+	// Modalın Dışındaki Karanlık Alana Tıklanınca Kapatma
 	window.addEventListener('click', (e) => {
 		if (e.target === modal) {
 			modal.classList.remove('modal-open');
@@ -672,7 +678,6 @@
 
 })();
 </script>
-
 	</body>
 </html>
 
