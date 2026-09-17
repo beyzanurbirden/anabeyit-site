@@ -1,6 +1,3 @@
----
----
-
 <!doctype html>
 <html lang="tr">
 	<head>
@@ -560,13 +557,29 @@
 
 			<span>© 2026</span>
 		</footer>
-	
+
+		<!-- =========================
+		     HİKÂYE EKLENTİSİ (MODAL)
+		     ========================= -->
+		<div class="story-modal" id="storyModal">
+			<div class="modal-content">
+				<button class="modal-close" id="closeModal">&times;</button>
+				<span class="modal-number" id="modalNumber"></span>
+				<h3 id="modalTitle"></h3>
+				<p class="modal-genre" id="modalGenre"></p>
+				<div class="grave-line" style="margin: 20px auto;"></div>
+				<p class="modal-text">bu kayıt henüz mühürlüdür. üzerindeki çalışmalar tamamlandığında gün yüzüne çıkarılacaktır.</p>
+			</div>
+		</div>
+
 <script>
 (function () {
 	const cemetery = document.querySelector(".cemetery");
 	const archiveViews = document.querySelectorAll(".archive-view");
 	const graves = document.querySelectorAll(".category-grave");
+	const topLogo = document.querySelector(".logo");
 
+	// Arşiv Açma / Kapama Fonksiyonları
 	function openArchive(id) {
 		archiveViews.forEach((view) => {
 			view.classList.toggle("archive-open", view.id === id);
@@ -587,6 +600,7 @@
 		cemetery.scrollIntoView({ behavior: "smooth", block: "start" });
 	}
 
+	// Mezarlıklara Tıklama Olayı
 	graves.forEach((grave) => {
 		grave.addEventListener("click", function (event) {
 			const href = grave.getAttribute("href");
@@ -598,9 +612,64 @@
 		});
 	});
 
+	// Geri Dön Butonları Olayı
 	document.querySelectorAll(".archive-back").forEach((button) => {
 		button.addEventListener("click", closeArchives);
 	});
+
+	// Sol Üst Logonun Anasayfaya Döndürmesi ve Arşivleri Kapatması
+	if (topLogo) {
+		topLogo.addEventListener("click", function () {
+			archiveViews.forEach((view) => view.classList.remove("archive-open"));
+			cemetery.classList.remove("cemetery-hidden");
+		});
+	}
+
+	// =========================
+	// HİKÂYE MODAL (EKLENTİ) KONTROLÜ
+	// =========================
+	const modal = document.getElementById('storyModal');
+	const closeModalBtn = document.getElementById('closeModal');
+	const modalTitle = document.getElementById('modalTitle');
+	const modalNumber = document.getElementById('modalNumber');
+	const modalGenre = document.getElementById('modalGenre');
+
+	document.querySelectorAll('.story-card').forEach(card => {
+		card.addEventListener('click', function(e) {
+			const href = this.getAttribute('href');
+			
+			// Eğer link # ise (diğer 49 hikaye) modal açılsın
+			if (href === '#' || href === '') {
+				e.preventDefault();
+				
+				// İçerikleri kopyala
+				const title = this.querySelector('h3').innerText;
+				const num = this.querySelector('.story-number').innerText;
+				const genre = this.querySelector('p').innerText;
+
+				// Modala yerleştir
+				modalTitle.innerText = title;
+				modalNumber.innerText = num;
+				modalGenre.innerText = genre;
+
+				// Modalı görünür yap
+				modal.classList.add('modal-open');
+			}
+		});
+	});
+
+	// Modalı Kapatma Butonu
+	closeModalBtn.addEventListener('click', () => {
+		modal.classList.remove('modal-open');
+	});
+
+	// Modal Dışına Tıklanınca Kapatma
+	window.addEventListener('click', (e) => {
+		if (e.target === modal) {
+			modal.classList.remove('modal-open');
+		}
+	});
+
 })();
 </script>
 
@@ -1382,4 +1451,97 @@
 		color: #c4b493;
 	}
 
+	/* =========================
+	   HİKÂYE MODAL (EKLENTİ) STİLLERİ
+	   ========================= */
+	.story-modal {
+		display: none;
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		background: rgba(4, 4, 3, 0.88);
+		backdrop-filter: blur(5px);
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.story-modal.modal-open {
+		display: flex;
+		opacity: 1;
+		animation: modalFadeIn 0.4s ease forwards;
+	}
+
+	.modal-content {
+		position: relative;
+		width: 90%;
+		max-width: 480px;
+		padding: 50px 40px 40px;
+		background: radial-gradient(ellipse at center, #1b1b17, #080706);
+		border: 1px solid rgba(160, 130, 80, 0.35);
+		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(10, 10, 8, 0.8);
+		text-align: center;
+		transform: translateY(20px);
+		transition: transform 0.4s ease;
+	}
+
+	.story-modal.modal-open .modal-content {
+		transform: translateY(0);
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 15px;
+		right: 20px;
+		background: none;
+		border: none;
+		color: #7f7766;
+		font-size: 2.2rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+
+	.modal-close:hover {
+		color: #d4c4a3;
+	}
+
+	.modal-number {
+		display: block;
+		margin-bottom: 15px;
+		color: #716856;
+		font-family: Arial, sans-serif;
+		font-size: 0.75rem;
+		letter-spacing: 0.2rem;
+	}
+
+	.modal-content h3 {
+		margin: 0 0 10px;
+		color: #d4c4a3;
+		font-size: 2.2rem;
+		font-weight: normal;
+		text-transform: lowercase;
+	}
+
+	.modal-genre {
+		margin: 0;
+		color: #847a67;
+		font-family: Arial, sans-serif;
+		font-size: 0.65rem;
+		letter-spacing: 0.15rem;
+		text-transform: lowercase;
+	}
+
+	.modal-text {
+		margin-top: 25px;
+		color: #948872;
+		font-size: 0.95rem;
+		line-height: 1.8;
+	}
+
+	@keyframes modalFadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
 </style>
